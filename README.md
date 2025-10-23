@@ -1,2 +1,16 @@
 # DevTinder
+
 Tinder for Developers
+
+uB3mfDASPTGrOdXw, saipoojithavankadara_db_user cluster in mail saipujithavanakadar mail
+mongodb+srv://saipoojithavankadara_db_user:uB3mfDASPTGrOdXw@poojicluster.kyq1ene.mongodb.net/ - connction string for saipujithavanakadara mail
+
+create a free cluster on MongoDB Official website(Mondo Atlas)
+Install mongoose library
+connect your application to the Database "Connection URL"/devTinder
+call the connectDb function and connect to Dbbefore starting the application on 3001
+
+create a user Schema & user Model
+create Post signUp API to add Data to database
+
+

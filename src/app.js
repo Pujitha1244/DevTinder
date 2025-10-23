@@ -1,27 +1,32 @@
 const express = require("express");
-
+const connectDb = require("./config/database");
 const app = express(); //app is instance of express js application, creating new web server
+const User = require("./models/user");
 
-const {adminAuth, userAuth} = require("./middlewares/auth");
-
-app.use('/admin', adminAuth);
-
-app.get('/user', userAuth, (req, res) => {
-  // Logic for fetching user data from database
-  res.send("This is user API");
+app.post("/signup", async (req, res) => {
+  const userObject = {
+    firstName: "Sagar",
+    lastName: "Jaini",
+    emailId: "sagar@gmail.com",
+    password: "Sagar@123",
+  };
+  // creating a new instance of the User Model
+  const user = new User(userObject);
+  try {
+    await user.save();
+    res.send("User Added Succesfully!"); // saving the user object to the database
+  } catch (err) {
+    res.status(400).send("Error in saving user");
+  }
 });
 
-app.get("/admin/getAllData", (req, res) => {
-  // Logis for Fetching all data from database
-  res.send("This is admin get all data API");
-});
-
-app.get("/admin/deleteUser", (req, res) => {
-  // Logic for deleting a user from database
-  res.send("This is admin delete user API");
-});
-
-app.listen(3001, () => {
-  console.log("Server is running on port 3001");
-});
-
+connectDb()
+  .then(() => {
+    console.log("Connected to MongoDB");
+    app.listen(3001, () => {
+      console.log("Server is running on port 3001");
+    });
+  })
+  .catch((err) => {
+    console.log("Error connecting to MongoDB", err);
+  });
