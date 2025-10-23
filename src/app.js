@@ -3,14 +3,12 @@ const connectDb = require("./config/database");
 const app = express(); //app is instance of express js application, creating new web server
 const User = require("./models/user");
 
+app.use(express.json()); //middleware to parse json body
+
 app.post("/signup", async (req, res) => {
-  const userObject = {
-    firstName: "Sagar",
-    lastName: "Jaini",
-    emailId: "sagar@gmail.com",
-    password: "Sagar@123",
-  };
-  // creating a new instance of the User Model
+  console.log(req.body);
+  const userObject = req.body;
+
   const user = new User(userObject);
   try {
     await user.save();
@@ -18,6 +16,20 @@ app.post("/signup", async (req, res) => {
   } catch (err) {
     res.status(400).send("Error in saving user");
   }
+  //   const userObject = {
+  //     firstName: "Pushpa",
+  //     lastName: "Jaini",
+  //     emailId: "pushpa@gmail.com",
+  //     password: "Pushpa@123",
+  //   };
+  //   // creating a new instance of the User Model
+  //   const user = new User(userObject);
+  //   try {
+  //     await user.save();
+  //     res.send("User Added Succesfully!"); // saving the user object to the database
+  //   } catch (err) {
+  //     res.status(400).send("Error in saving user");
+  //   }
 });
 
 connectDb()

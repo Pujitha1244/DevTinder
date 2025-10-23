@@ -13,4 +13,5 @@ call the connectDb function and connect to Dbbefore starting the application on 
 create a user Schema & user Model
 create Post signUp API to add Data to database
 
-
+Add a express.json middleware to your app
+Make your signup API dynamic to receive data from end user
