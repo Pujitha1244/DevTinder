@@ -6,7 +6,6 @@ const User = require("./models/user");
 app.use(express.json()); //middleware to parse json body
 
 app.post("/signup", async (req, res) => {
-  console.log(req.body);
   const userObject = req.body;
 
   const user = new User(userObject);
@@ -14,7 +13,8 @@ app.post("/signup", async (req, res) => {
     await user.save();
     res.send("User Added Succesfully!"); // saving the user object to the database
   } catch (err) {
-    res.status(400).send("Error in saving user");
+    console.log("Error in saving user", err.message);
+    res.status(400).send(err.message);
   }
   //   const userObject = {
   //     firstName: "Pushpa",
@@ -30,6 +30,60 @@ app.post("/signup", async (req, res) => {
   //   } catch (err) {
   //     res.status(400).send("Error in saving user");
   //   }
+});
+
+// find user by email
+app.get("/user", async (req, res) => {
+  console.log("User email", req.body);
+  const userEmail = req.body.emailId;
+  try {
+    const users = await User.find({ emailId: userEmail });
+    if (users.length === 0) {
+      res.status(404).send("User Not Found");
+    } else {
+      res.send(users);
+    }
+  } catch (err) {
+    res.status(400).send("Something went Worng");
+  }
+});
+
+// Feed API - GET / feed get all the users
+app.get("/feed", async (req, res) => {
+  try {
+    const users = await User.find({});
+    res.send(users);
+  } catch (err) {
+    res.status(400).send("Something went Worng");
+  }
+});
+
+// Update Data os the User
+app.patch("/update", async (req, res) => {
+  const UserId = req.body.userId;
+  const data = req.body;
+  try {
+    await User.findByIdAndUpdate({ _id: UserId }, data, {
+      runValidators: true,
+    });
+    res.send("User Updated Successfully");
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+
+app.delete("/delete", async (req, res) => {
+  const userId = req.body.userId;
+  try {
+    const user = await User.findByIdAndDelete(userId);
+    if (!user) {
+      res.status(404).send("User Not Found");
+    } else {
+      res.send("User Deleted Successfully");
+    }
+  } catch (err) {
+    res.status(400).send("Something went Worng");
+  }
 });
 
 connectDb()
