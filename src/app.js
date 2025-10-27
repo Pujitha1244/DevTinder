@@ -2,38 +2,60 @@ const express = require("express");
 const connectDb = require("./config/database");
 const app = express(); //app is instance of express js application, creating new web server
 const User = require("./models/user");
+const { validateSignUpData, validateLoinData } = require("./utils/validation");
+const bcrypt = require("bcrypt");
 
 app.use(express.json()); //middleware to parse json body
 
 app.post("/signup", async (req, res) => {
-  const userObject = req.body;
-
-  const user = new User(userObject);
-  console.log("User Object", user);
+  // Validation of Data
   try {
+    validateSignUpData(req);
+
+    // Encrypt the password
+    const { firstName, lastName, emailId, password } = req.body;
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    // save the User
+    const user = new User({
+      firstName,
+      lastName,
+      emailId,
+      password: passwordHash,
+    });
+
     if (user.skills && user.skills.length > 10) {
       throw new Error("Skills should not exceed 10");
     }
     await user.save();
     res.send("User Added Succesfully!"); // saving the user object to the database
   } catch (err) {
-    console.log("Error in saving user", err.message);
+    console.log("ERROR : " + err.message);
     res.status(400).send(err.message);
   }
-  //   const userObject = {
-  //     firstName: "Pushpa",
-  //     lastName: "Jaini",
-  //     emailId: "pushpa@gmail.com",
-  //     password: "Pushpa@123",
-  //   };
-  //   // creating a new instance of the User Model
-  //   const user = new User(userObject);
-  //   try {
-  //     await user.save();
-  //     res.send("User Added Succesfully!"); // saving the user object to the database
-  //   } catch (err) {
-  //     res.status(400).send("Error in saving user");
-  //   }
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const { emailId, password } = req.body;
+    validateLoinData(req);
+
+    const user = await User.findOne({ emailId: emailId });
+
+    if (!user) {
+      throw new Error("Invalid Credientials");
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (isPasswordValid) {
+      res.send("User login Successful");
+    } else {
+      throw new Error("Invalid Credientials");
+    }
+  } catch (err) {
+    console.log("ERROR : " + err.message);
+    res.status(400).send(err.message);
+  }
 });
 
 // find user by email

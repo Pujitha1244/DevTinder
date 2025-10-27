@@ -1,5 +1,9 @@
 # DevTinder
 
+packages downloaded
+validator
+bcrypt
+
 Tinder for Developers
 
 uB3mfDASPTGrOdXw, saipoojithavankadara_db_user cluster in mail saipujithavanakadar mail
@@ -15,3 +19,29 @@ create Post signUp API to add Data to database
 
 Add a express.json middleware to your app
 Make your signup API dynamic to receive data from end user
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Validate data in Signup API
+Install bcrypt package
+create passwordHash using bcrypt.hash and save the user with wncrypted password
