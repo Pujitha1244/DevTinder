@@ -4,8 +4,10 @@ const app = express(); //app is instance of express js application, creating new
 const User = require("./models/user");
 const { validateSignUpData, validateLoinData } = require("./utils/validation");
 const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
 
 app.use(express.json()); //middleware to parse json body
+app.use(cookieParser());
 
 app.post("/signup", async (req, res) => {
   // Validation of Data
@@ -39,21 +41,36 @@ app.post("/login", async (req, res) => {
   try {
     const { emailId, password } = req.body;
     validateLoinData(req);
-
     const user = await User.findOne({ emailId: emailId });
-
     if (!user) {
       throw new Error("Invalid Credientials");
     }
-
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (isPasswordValid) {
+      // Create a JWT Token
+
+      // Add the JWT token to cookie and send the response back to the User
+      res.cookie("token", "ghnsjhvbjaskxnahkyughjxkgjlyuhjnbcgy");
+
       res.send("User login Successful");
     } else {
       throw new Error("Invalid Credientials");
     }
   } catch (err) {
     console.log("ERROR : " + err.message);
+    res.status(400).send(err.message);
+  }
+});
+
+app.get("/profile", async (req, res) => {
+  try {
+    const cookies = req.cookies;
+    console.log(cookies);
+    const { token } = cookies;
+    // Validate My Token
+
+    res.send("reading");
+  } catch (err) {
     res.status(400).send(err.message);
   }
 });
