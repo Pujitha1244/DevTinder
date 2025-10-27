@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const validator = require("validator");
 
 const userSchema = new mongoose.Schema(
   {
@@ -19,6 +20,11 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
+      validate(value) {
+        if (!validator.isEmail(value)) {
+          throw new Error("Email is not valid");
+        }
+      },
     },
     password: {
       type: String,
@@ -44,6 +50,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       default:
         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSToP5rz4ky9W48e8f3kQ8gdA_b7fyyjP68Eg&s",
+      validate(value) {
+        if (!validator.isURL(value)) {
+          throw new Error("Photo URL is not valid");
+        }
+      },
     },
     about: {
       type: String,
@@ -51,13 +62,10 @@ const userSchema = new mongoose.Schema(
     },
     skills: {
       type: [String],
+      default: [], // Ensure skills is initialized as an empty array
     },
   },
   { timestamps: true }
 );
-
-// const UserModel = mongoose.model("User", userSchema);
-
-// module.exports = UserModel;
 
 module.exports = mongoose.model("User", userSchema);

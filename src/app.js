@@ -9,7 +9,11 @@ app.post("/signup", async (req, res) => {
   const userObject = req.body;
 
   const user = new User(userObject);
+  console.log("User Object", user);
   try {
+    if (user.skills && user.skills.length > 10) {
+      throw new Error("Skills should not exceed 10");
+    }
     await user.save();
     res.send("User Added Succesfully!"); // saving the user object to the database
   } catch (err) {
@@ -59,10 +63,26 @@ app.get("/feed", async (req, res) => {
 });
 
 // Update Data os the User
-app.patch("/update", async (req, res) => {
-  const UserId = req.body.userId;
+app.patch("/user/:userId", async (req, res) => {
+  const UserId = req.params?.userId;
   const data = req.body;
+  console.log("Update Data", data, UserId);
   try {
+    const ALLOWED_UPDATES = ["photoUrl", "about", "gender", "age", "skills"];
+
+    const isUpdateAllowed = Object.keys(data).every((k) =>
+      ALLOWED_UPDATES.includes(k)
+    );
+    if (!isUpdateAllowed) {
+      throw new Error("Invalid Updates!");
+    }
+    // if (data?.skills.length > 10) {
+    //   throw new Error("Skills should not exceed 10");
+    // }
+    if (data.skills && data.skills.length > 10) {
+      return res.status(400).send("Skills should not exceed 10");
+    }
+
     await User.findByIdAndUpdate({ _id: UserId }, data, {
       runValidators: true,
     });
