@@ -20,28 +20,20 @@ create Post signUp API to add Data to database
 Add a express.json middleware to your app
 Make your signup API dynamic to receive data from end user
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Validate data in Signup API
 Install bcrypt package
 create passwordHash using bcrypt.hash and save the user with wncrypted password
+create login APi
+compare passwords and throe errors if email and password is invalid
+
+install cookie-parser
+just send dummy cookie to user
+create GET/profile api check you get the cookie back
+install JSON web token
+In login api after email and password validation, create JWT token and sent it to user in cookies
+read the cookies inside your profile API and find the logged in User
+userAuth Middleware
+Add user Auth middleware for API's that we need like profile and sendConnectionRequest api's
+set JWT and cookies expiry
+Create user Schema method to getJWT()
+Create user Schema method to comparepassword(password)
