@@ -57,3 +57,7 @@ React Documentation for express.Router
 Create Routes folder for managing auth, profile, request routers
 create authRouter, profile Router, requestRouter
 import these routers in app.js
+Create POST /Logout APi
+Create PATCH /profile/edit
+Create PATCH /profile/password API - Forgot Password API
+Make sure to validate all data in every POST and PATCH API's
