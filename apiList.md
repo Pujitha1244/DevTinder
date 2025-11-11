@@ -19,13 +19,17 @@ PATCH /profile/password
 POST /request/send/interested/:userID
 POST /request/send/ignored/:userID
 
+# above 2 apis in to below API
 POST /request/send/:status/:userID
 
 POST /request/review/accepted/:requestId
 POST /request/review/rejected/:requestId
 
+# above 2 apis in to below API
+POST /request/review/:status/:requestId
+
 # User Router
 
 GET /user/connections
-GET /user/requests/received
+GET /user/requests/ received
 GET /user/feed - Gets you the profiles of other users on platform

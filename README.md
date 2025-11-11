@@ -61,3 +61,35 @@ Create POST /Logout APi
 Create PATCH /profile/edit
 Create PATCH /profile/password API - Forgot Password API
 Make sure to validate all data in every POST and PATCH API's
+
+Create connection request Schema
+send connection Request API
+Proper validation od data
+Think about corner cases and handle them
+$or and $and, $not query : read more about them in mongodb documantation
+schema.pre("save") function
+Read about Indexed in mongoose
+why ? indexes
+adv and disadvantages of indexed
+
+Write code with Proper Validations to this API: POST /request/review/:status/:requestId
+Thought process of POST and GET Api's
+Read about ref and populate in mongoose doc
+Create GET GET /user/connections and GET /user/requests/ received API's
+
+Logic for get /feed API
+Explore $nin, $in and other query parameters
+
+# Notes
+
+/feed?page=1&limit=10 => first 10 users : .skip(0) & .limit(10) => 1st 10 users
+/feed?page=2&limit=10 => 11-20 : .skip(10) & .limit(10)
+/feed?page=3&limit=10 => 21-30 : .skip(20) & .limit(10)
+
+.skip() & .limit()
+
+.skip() : means how many documents you skip from 1st(starting)
+
+.limit() : how many documents you want
+
+skip = (page-1)*limit
