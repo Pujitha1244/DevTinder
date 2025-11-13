@@ -2,7 +2,14 @@ const express = require("express");
 const connectDb = require("./config/database");
 const app = express(); //app is instance of express js application, creating new web server
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 app.use(express.json()); //middleware to parse json body
 app.use(cookieParser());
 

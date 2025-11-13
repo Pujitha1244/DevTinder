@@ -70,10 +70,8 @@ requestRouter.post(
       const allowedStatus = ["accepted", "rejected"];
 
       // validate Status
-      if (!allowedStatus.includes(status)) {
-        return res
-          .status(400)
-          .json({ message: "Invalid Status Type" + status });
+       if (!allowedStatus.includes(status)) {
+        return res.status(400).json({ messaage: "Status not allowed!" });
       }
 
       const connectionRequest = await ConnectionRequest.findOne({

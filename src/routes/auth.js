@@ -25,8 +25,17 @@ authRouter.post("/signup", async (req, res) => {
     if (user.skills && user.skills.length > 10) {
       throw new Error("Skills should not exceed 10");
     }
-    await user.save();
-    res.send("User Added Succesfully!"); // saving the user object to the database
+    const savedUser = await user.save();
+    const token = await savedUser.getJWT();
+    res.cookie("token", token, {
+      expires: new Date(Date.now() + 8 * 3600000),
+    });
+
+    res.json({
+      message: "User Added Succesfully!",
+      data: savedUser,
+    });
+    // res.send("User Added Succesfully!"); // saving the user object to the database
   } catch (err) {
     console.log("ERROR : " + err.message);
     res.status(400).send(err.message);
@@ -46,9 +55,12 @@ authRouter.post("/login", async (req, res) => {
     if (isPasswordValid) {
       const token = await user.getJWT();
       // Add the JWT token to cookie and send the response back to the User
-      res.cookie("token", token);
+      res.cookie("token", token, {
+        expires: new Date(Date.now() + 8 * 3600000),
+      });
 
-      res.send("User login Successful");
+      // res.send("User login Successful");
+      res.send(user);
     } else {
       throw new Error("Invalid Credientials");
     }

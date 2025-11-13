@@ -7,7 +7,12 @@ const profileRouter = express.Router();
 profileRouter.get("/profile/view", userAuth, async (req, res) => {
   try {
     const user = req.user;
-    res.send("user profile of " + user);
+    // res.send("user profile of " + user);
+    // res.json({
+    //   message: `User profile of ${user.firstName}`,
+    //   data: user,
+    // });
+    res.send(user);
   } catch (err) {
     res.status(400).send(err.message);
   }
