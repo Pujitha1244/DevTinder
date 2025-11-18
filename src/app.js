@@ -3,6 +3,7 @@ const connectDb = require("./config/database");
 const app = express(); //app is instance of express js application, creating new web server
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+require('dotenv').config()
 
 app.use(
   cors({
@@ -26,7 +27,7 @@ app.use("/", userRouter);
 connectDb()
   .then(() => {
     console.log("Connected to MongoDB");
-    app.listen(3001, () => {
+    app.listen(process.env.PORT, () => {
       console.log("Server is running on port 3001");
     });
   })
