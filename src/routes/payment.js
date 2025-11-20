@@ -44,7 +44,7 @@ paymentRouter.post("/payment/create", userAuth, async (req, res) => {
 
     // save it to my database
     // Return back my order details to frontend
-    res.json(order);
+    // res.json(order);
   } catch (err) {
     res.status(400).send(err.message);
   }
