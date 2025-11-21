@@ -187,12 +187,12 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
     await payment.save();
     console.log("Payment saved");
 
-    const user = await user.findOne({ _id: payment.userId });
-    user.isPremium = true;
-    user.membershipType = payment.notes.membershipType;
+    const userdata = await user.findOne({ _id: payment.userId });
+    userdata.isPremium = true;
+    userdata.membershipType = payment.notes.membershipType;
     console.log("User saved");
 
-    await user.save();
+    await userdata.save();
 
     const payload = JSON.parse(raw);
     // ... handle payload
