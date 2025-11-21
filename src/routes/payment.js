@@ -62,8 +62,10 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
     );
 
     if (!isWebhookValid) {
+      console.log("IInvalid Webhook Signature");
       return res.status(400).json({ msg: "Webhook signature is invalid" });
     }
+     console.log("Valid Webhook Signature");
 
     // Update my payment status in DB
     const paymentDetails = req.body.payload.payment.entity;
@@ -71,11 +73,13 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
     const payment = await Payment.findOne({ orderId: paymentDetails.order_id });
     payment.status = paymentDetails.status;
     await payment.save();
+    console.log("Payment saved");
     // Update user as Premium
 
     const user = await user.findOne({ _id: payment.userId });
     user.isPremium = true;
     user.membershipType = payment.notes.membershipType;
+     console.log("User saved");
 
     await user.save();
 
