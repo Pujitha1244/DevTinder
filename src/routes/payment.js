@@ -148,10 +148,11 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
     const webhookSignature =
       req.get("X-Razorpay-Signature") || req.get("x-razorpay-signature");
     const raw = req.rawBody; // <-- use captured raw string
+    console.log("Webhook Signature", webhookSignature);
 
-    console.log("Raw body length:", raw ? raw.length : "none");
-    console.log("Raw body (preview):", raw ? raw.slice(0, 1000) : "none");
-    console.log("Webhook Signature header:", webhookSignature);
+    // console.log("Raw body length:", raw ? raw.length : "none");
+    // console.log("Raw body (preview):", raw ? raw.slice(0, 1000) : "none");
+    // console.log("Webhook Signature header:", webhookSignature);
 
     if (!raw) {
       console.error(
@@ -179,6 +180,20 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
     }
 
     console.log("Valid Webhook Signature");
+
+    const paymentDetails = req.body.payload.payment.entity;
+    const payment = await Payment.findOne({ orderId: paymentDetails.order_id });
+    payment.status = paymentDetails.status;
+    await payment.save();
+    console.log("Payment saved");
+
+    const user = await user.findOne({ _id: payment.userId });
+    user.isPremium = true;
+    user.membershipType = payment.notes.membershipType;
+    console.log("User saved");
+
+    await user.save();
+
     const payload = JSON.parse(raw);
     // ... handle payload
     return res.status(200).json({ msg: "Webhook received successfully!" });
