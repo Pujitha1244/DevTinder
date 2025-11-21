@@ -96,51 +96,44 @@ paymentRouter.post("/payment/create", userAuth, async (req, res) => {
 //   }
 // });
 
-paymentRouter.post(
-  "/payment/webhook",
-  express.raw({ type: "application/json" }),
-  async (req, res) => {
-    try {
-      const webhookSignature =
-        req.get("X-Razorpay-Signature") || req.get("x-razorpay-signature");
-      const raw = req.body.toString("utf8"); // raw JSON string exactly as received
-      console.log("Raw body:", raw);
-      console.log("Webhook Signature header:", webhookSignature);
+paymentRouter.post('/payment/webhook', async (req, res) => {
+  try {
+    const webhookSignature = req.get('X-Razorpay-Signature') || req.get('x-razorpay-signature');
+    const raw = req.rawBody || (req.body && JSON.stringify(req.body)); // prefer rawBody
 
-      const isWebhookValid = validateWebhookSignature(
-        raw,
-        webhookSignature,
-        process.env.RAZORPAY_WEBHOOK_SECRET
-      );
+    console.log('Raw body length:', raw ? raw.length : 'no raw');
+    console.log('Raw body (first 1000 chars):', raw ? String(raw).slice(0,1000) : 'none');
+    console.log('Webhook Signature header:', webhookSignature);
 
-      if (!isWebhookValid) {
-        console.log("Invalid Webhook Signature");
-        return res.status(400).json({ msg: "Webhook signature is invalid" });
-      }
-      console.log("Valid Webhook Signature");
-
-      const payload = JSON.parse(raw); // now parse from raw
-      const paymentDetails = payload.payload.payment.entity;
-
-      // rest of your processing...
-      const payment = await Payment.findOne({
-        orderId: paymentDetails.order_id,
-      });
-      if (payment) {
-        payment.status = paymentDetails.status;
-        await payment.save();
-        console.log("Payment saved");
-      } else {
-        console.log("Payment not found for orderId", paymentDetails.order_id);
-      }
-
-      // update user etc...
-      return res.status(200).json({ msg: "Webhook received successfully!" });
-    } catch (err) {
-      console.error("Webhook handler error", err);
-      return res.status(400).send(err.message);
+    if (!raw) {
+      console.error('No raw body available — verify verify() is set on express.json middleware');
+      return res.status(400).send('No raw body');
     }
+
+    const isWebhookValid = validateWebhookSignature(raw, webhookSignature, process.env.RAZORPAY_WEBHOOK_SECRET);
+
+    if (!isWebhookValid) {
+      console.log('Invalid Webhook Signature');
+      // optional: compute expected and log for debugging (see code below)
+      const crypto = require('crypto');
+      const expected = crypto.createHmac('sha256', process.env.RAZORPAY_WEBHOOK_SECRET)
+                             .update(raw)
+                             .digest('hex');
+      console.log('Expected signature:', expected);
+      return res.status(400).json({ msg: 'Webhook signature is invalid' });
+    }
+
+    console.log('Valid Webhook Signature');
+    const payload = JSON.parse(raw);
+    const paymentDetails = payload.payload.payment.entity;
+
+    // ... your DB updates
+    return res.status(200).json({ msg: 'Webhook received successfully!' });
+  } catch (err) {
+    console.error('Webhook handler error', err);
+    return res.status(400).send(err.message);
   }
-);
+});
+
 
 module.exports = paymentRouter;

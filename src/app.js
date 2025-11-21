@@ -13,12 +13,11 @@ app.use(
 );
 // app.use(express.json()); //middleware to parse json body
 app.use(express.json({
-  verify: (req, res, buf) => {
-    // keep raw JSON body to validate Razorpay signature later
-    req.rawBody = buf.toString();
+  verify: (req, res, buf /* Buffer */, encoding) => {
+    // only attach rawBody if content-type is application/json
+    if (buf && buf.length) req.rawBody = buf.toString(encoding || 'utf8');
   }
 }));
-app.use(cookieParser());
 
 const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
