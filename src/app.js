@@ -11,7 +11,13 @@ app.use(
     credentials: true,
   })
 );
-app.use(express.json()); //middleware to parse json body
+// app.use(express.json()); //middleware to parse json body
+app.use(express.json({
+  verify: (req, res, buf) => {
+    // keep raw JSON body to validate Razorpay signature later
+    req.rawBody = buf.toString();
+  }
+}));
 app.use(cookieParser());
 
 const authRouter = require("./routes/auth");
