@@ -12,10 +12,17 @@ app.use(
   })
 );
 // app.use(express.json()); //middleware to parse json body
+// app.use(express.json({
+//   verify: (req, res, buf) => {
+//     // keep raw JSON body to validate Razorpay signature later
+//     req.rawBody = buf.toString();
+//   }
+// }));
 app.use(express.json({
-  verify: (req, res, buf) => {
-    // keep raw JSON body to validate Razorpay signature later
-    req.rawBody = buf.toString();
+  verify: (req, res, buf, encoding) => {
+    if (buf && buf.length) {
+      req.rawBody = buf.toString(encoding || 'utf8');
+    }
   }
 }));
 app.use(cookieParser());
